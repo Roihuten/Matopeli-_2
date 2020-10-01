@@ -19,6 +19,8 @@ function reset()
 	
 	suunta = 'right'
 	ajastin = 0
+	aikaraja = 0.25
+	
 	
 end
 
@@ -44,27 +46,81 @@ end
 
 function love.update(dt)
 	
-	local seuraavax = mato[1].x
-	local seuraavay = mato[1].y
+	ajastin = ajastin + dt
 	
-	if suunta == 'right' then
-		seuraavax = seuraavax + 1
+	if ajastin >= aikaraja then
+	
+		ajastin = ajastin - aikaraja
+	
+		local seuraavax = mato[1].x
+		local seuraavay = mato[1].y
 		
-		if seuraavax > leveys - 1 then
-		suunta = 'left'
+		peliJatkuu = true
+		
+		if suunta == 'right' then
+			seuraavax = seuraavax + 1
+			
+			if seuraavax > leveys - 1 then
+				peliJatkuu = false
+			end
+			
+		elseif suunta == 'left' then
+			seuraavax = seuraavax - 1
+			
+			if seuraavax < 1 then
+				peliJatkuu = false
+			end
+			
+		elseif suunta == 'down' then
+			seuraavay = seuraavay + 1
+			
+			if seuraavay > korkeus - 1 then
+				peliJatkuu = false
+			end
+			
+		elseif suunta == 'up' then
+			seuraavay = seuraavay - 1
+			
+			if seuraavay < 1 then
+				peliJatkuu = false
+			end	
+		
 		end
 		
-	elseif suunta == 'left' then
-		seuraavax = seuraavax - 1
-		
-		if seuraavax < 1 then
-		suunta = 'right'
-		end
+		table.insert(mato,1,{x =seuraavax, y = seuraavay})
+		table.remove(mato)
 	end
-	
-	table.insert(mato,1,{x =seuraavax, y = seuraavay})
-	table.remove(mato)
 end
+
+function love.keypressed(key)
+	if(key == 'right' and peliJatkuu == true and suunta ~= 'left') then
+		suunta = 'right'
+		
+	elseif key == 'left' and peliJatkuu == true and suunta ~= 'right' then
+		suunta = 'left'
+	
+	elseif key == 'up' and peliJatkuu == true and suunta ~= 'down' then
+		suunta = 'up'
+		
+	elseif key == 'down' and peliJatkuu == true and suunta ~= 'up' then
+		suunta = 'down'
+	end
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
