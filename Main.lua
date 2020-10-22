@@ -1,10 +1,12 @@
 --  -     MATOPELI     -
---  "a game about a worm"
+--   a game about a worm
+--  		 &
+--	 HIS INSATIABLE HUNGER
 
 
 function love.load()
 	leveys = 20
-	korkeus = 15
+	korkeus = 16
 	
 	reset()
 end
@@ -20,10 +22,20 @@ function reset()
 	suunta = 'right'
 	ajastin = 0
 	aikaraja = 0.25
-	
+	ruoki()
 	
 end
 
+function ruoki()
+	ruoka = {}
+	ruokaX = love.math.random(1,leveys)
+	ruokaY = love.math.random(1,korkeus)
+	
+	ruoka.x = ruokaX
+	ruoka.y = ruokaY
+	-- pisteen lisäys
+	
+end
 
 
 -- Funktio peli"framien" piirtämiseen
@@ -33,9 +45,14 @@ function love.draw()
 	
 	love.graphics.rectangle('fill', 0, 0, leveys*ruutu, korkeus*ruutu)
 	
+	
+	
 	local function piirraRuutu(x,y)
 		love.graphics.rectangle('fill',(x-1)*ruutu,(y-1)*ruutu,ruutu-1,ruutu-1)
 	end
+	
+	love.graphics.setColor(1,.3,.3)
+	piirraRuutu(ruoka.x,ruoka.y)
 	
 	for indeksi , matopala in ipairs(mato) do
 		love.graphics.setColor(.6,.9,0.32)
@@ -60,7 +77,9 @@ function love.update(dt)
 		if suunta == 'right' then
 			seuraavax = seuraavax + 1
 			
-			if seuraavax > leveys - 1 then
+			if seuraavax > leveys then
+				-- VAIHDETTU miinus PLUSSAKSI YLLÄOLEVASSA leveys +/- 1 KOHDASSA
+				--KORJAUS: PELKKÄ LEVEYS (ja korkeus alempana)
 				peliJatkuu = false
 			end
 			
@@ -74,7 +93,7 @@ function love.update(dt)
 		elseif suunta == 'down' then
 			seuraavay = seuraavay + 1
 			
-			if seuraavay > korkeus - 1 then
+			if seuraavay > korkeus then
 				peliJatkuu = false
 			end
 			
@@ -87,8 +106,23 @@ function love.update(dt)
 		
 		end
 		
-		table.insert(mato,1,{x =seuraavax, y = seuraavay})
-		table.remove(mato)
+		if peliJatkuu then
+			table.insert(mato,1,{x =seuraavax, y = seuraavay})
+			
+			if mato[1].x == ruoka.x and mato[1].y == ruoka.y then
+				ruoki()
+				
+				aikaraja = aikaraja - 0.01
+				if aikaraja < 0.02 then
+				end
+				
+			else
+				table.remove(mato)
+			end
+		end
+		
+		
+		
 	end
 end
 
