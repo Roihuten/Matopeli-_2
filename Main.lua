@@ -7,7 +7,8 @@
 function love.load()
 	leveys = 20
 	korkeus = 16
-	
+	love.window.setMode(leveys*15, korkeus*15)
+	-- leveys & korkeus *kertaa NUMERO = numeron pitää olla samankokoinen "ruudun" kanssa (kts. alempaa ruutu muuuttuja)
 	reset()
 end
 
@@ -22,6 +23,7 @@ function reset()
 	suunta = 'right'
 	ajastin = 0
 	aikaraja = 0.25
+	pisteet = 0
 	ruoki()
 	
 end
@@ -31,9 +33,26 @@ function ruoki()
 	ruokaX = love.math.random(1,leveys)
 	ruokaY = love.math.random(1,korkeus)
 	
-	ruoka.x = ruokaX
-	ruoka.y = ruokaY
+	local voiRuokkia = true
+	
+	for indeksi, matopala in ipairs(mato) do
+	
+		if ruokaX == matopala.x and ruokaY == matopala.y then
+			voiRuokkia = false
+		end
+	
+	
+	end
+	
+	if voiRuokkia then
+		ruoka.x = ruokaX
+		ruoka.y = ruokaY
 	-- pisteen lisäys
+	else
+		ruoki()
+	end
+	
+
 	
 end
 
@@ -59,6 +78,11 @@ function love.draw()
 		piirraRuutu(matopala.x, matopala.y)
 	end
 	
+	love.graphics.print(pisteet,(leveys -1)*ruutu,0)
+	
+	if peliJatkuu == false then
+		love.graphics.print("GAME OVER",(leveys -1)*ruutu,0)
+	end
 end
 
 function love.update(dt)
@@ -106,14 +130,22 @@ function love.update(dt)
 		
 		end
 		
+		for indeksi,matopala in ipairs(mato) do
+			if indeksi ~= #mato and seuraavax == matopala.x and seuraavay == matopala.y then
+				peliJatkuu = false
+			end
+		end
+		
 		if peliJatkuu then
 			table.insert(mato,1,{x =seuraavax, y = seuraavay})
 			
 			if mato[1].x == ruoka.x and mato[1].y == ruoka.y then
+				pisteet = pisteet + 1
 				ruoki()
 				
-				aikaraja = aikaraja - 0.01
-				if aikaraja < 0.02 then
+				aikaraja = aikaraja - 0.005
+				if aikaraja < 0.05 then
+				aikaraja = 0.05
 				end
 				
 			else
@@ -127,7 +159,7 @@ function love.update(dt)
 end
 
 function love.keypressed(key)
-	if(key == 'right' and peliJatkuu == true and suunta ~= 'left') then
+	if key == 'right' and peliJatkuu == true and suunta ~= 'left' then
 		suunta = 'right'
 		
 	elseif key == 'left' and peliJatkuu == true and suunta ~= 'right' then
@@ -138,6 +170,9 @@ function love.keypressed(key)
 		
 	elseif key == 'down' and peliJatkuu == true and suunta ~= 'up' then
 		suunta = 'down'
+		
+	elseif key =='return' then
+		reset()
 	end
 end
 
