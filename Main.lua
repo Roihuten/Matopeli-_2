@@ -81,7 +81,14 @@ function love.draw()
 	love.graphics.print(pisteet,(leveys -1)*ruutu,0)
 	
 	if peliJatkuu == false then
-		love.graphics.print("GAME OVER",(leveys -1)*ruutu,0)
+		love.graphics.setColor(1,0,0.25)
+		gameoverText = "-- GAME OVER --\n\n     Points: " .. tostring(pisteet) .. "\n\nPress Enter to be \n   ~ REBORN ~"
+		love.graphics.print(gameoverText,(leveys/3*ruutu), (korkeus*ruutu/3))
+		
+		
+		
+		
+		--love.graphics.print("GAME OVER",(leveys -1)*ruutu,0)
 	end
 end
 
@@ -164,6 +171,9 @@ function love.keypressed(key)
 		
 	elseif key == 'left' and peliJatkuu == true and suunta ~= 'right' then
 		suunta = 'left'
+	
+	-- U Käännös bugi: mato hajoaa jos suunta on alas ja painaa left & ylös niin mato hajoaa...
+	-- Eli suunta on vaihtunut ennen kuin mato on liikkunut; ja täten pystyy tekemään "laittoman" U käännöksen ja häviämään
 	
 	elseif key == 'up' and peliJatkuu == true and suunta ~= 'down' then
 		suunta = 'up'
